@@ -7,8 +7,8 @@ from fastapi.responses import FileResponse
 import uuid
 import os
 
-from .poster_generation import generate_poster_from_prompt
-from .poster_generation import enhance_prompt
+from poster_generation import generate_poster_from_prompt
+from poster_generation import enhance_prompt
 
 app = FastAPI()
 
