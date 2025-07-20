@@ -64,8 +64,8 @@ def generate_poster_from_prompt(prompt: str, output_path: str = "poster.png") ->
     prompt = prompt.replace("QR code", "white box").replace("QR codes", "white boxes")
 
     result = client.images.generate(
-        model="dall-e-3",
-        size="1024x1536",
+        model="gpt-image-1",
+        size="1024x1792",
         n=1,
         prompt=prompt
     )
