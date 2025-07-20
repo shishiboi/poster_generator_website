@@ -14,7 +14,11 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],  # Support both
+    allow_origins=[
+        "http://localhost:3000", 
+        "https://poster-generator-web-l3pfj.vercel.app",  # Add your exact Vercel URL
+        "https://*.vercel.app"  # Allow all Vercel subdomains
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
