@@ -15,7 +15,7 @@ if not api_key:
 try:
     client = OpenAI(
         api_key=api_key,
-        timeout=60.0,
+        timeout=480.0,
         max_retries=3
     )
 except Exception as e:
