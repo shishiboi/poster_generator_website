@@ -11,7 +11,17 @@ api_key = os.getenv("OPENAI_API_KEY")
 if not api_key:
     raise RuntimeError("OPENAI_API_KEY is not set in the environment.")
 
-client = OpenAI(api_key=api_key)
+# Initialize OpenAI client with explicit parameters
+try:
+    client = OpenAI(
+        api_key=api_key,
+        timeout=60.0,
+        max_retries=3
+    )
+except Exception as e:
+    print(f"Error initializing OpenAI client: {e}")
+    # Fallback initialization
+    client = OpenAI(api_key=api_key)
 
 def enhance_prompt(prompt: str) -> str:
     """Enhance a user prompt into a detailed, structured layout prompt for poster generation."""
@@ -37,7 +47,6 @@ def enhance_prompt(prompt: str) -> str:
     If the user prompt already contains detailed structure (e.g., layout, pixel sizes, font style), do not overwrite it.
     """.strip()
 
-
     chat = client.chat.completions.create(
         model="gpt-4",
         messages=[
@@ -55,7 +64,7 @@ def generate_poster_from_prompt(prompt: str, output_path: str = "poster.png") ->
     prompt = prompt.replace("QR code", "white box").replace("QR codes", "white boxes")
 
     result = client.images.generate(
-        model="gpt-image-1",
+        model="dall-e-3",
         size="1024x1536",
         n=1,
         prompt=prompt
