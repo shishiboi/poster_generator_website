@@ -3,7 +3,6 @@
 import type React from "react";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 
@@ -15,7 +14,6 @@ export default function SignUp() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const { signUp, signInWithGoogle } = useAuth();
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +51,8 @@ export default function SignUp() {
               Check your email
             </h2>
             <p className="mt-2 text-sm text-gray-600">
-              We've sent you a confirmation link at <strong>{email}</strong>
+              We&apos;ve sent you a confirmation link at{" "}
+              <strong>{email}</strong>
             </p>
             <p className="mt-4 text-sm text-gray-600">
               <Link
