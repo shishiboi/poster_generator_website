@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+/* More targeted reset to avoid conflicts */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+}
+
+/* Ensure text areas and inputs have proper styling */
+textarea,
+input[type="text"],
+input[type="email"],
+select {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* Remove the aggressive global styles that might conflict */
+textarea::placeholder,
+input::placeholder {
+  opacity: 0.5;
+}
+
+/* Ensure proper text color inheritance */
+button,
+input,
+textarea,
+select {
+  color: inherit;
+}
