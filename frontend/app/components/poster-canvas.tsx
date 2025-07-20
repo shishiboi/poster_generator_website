@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // Type definitions
 interface QRCode {
@@ -71,8 +71,6 @@ function PosterCanvas({ posterUrl, qrCodes = [] }: PosterCanvasProps) {
   // Floating toolbar states
   const [showFloatingToolbar, setShowFloatingToolbar] = useState(false);
   const [toolbarPosition, setToolbarPosition] = useState({ x: 0, y: 0 });
-  const [toolbarUpdateTimeout, setToolbarUpdateTimeout] =
-    useState<NodeJS.Timeout | null>(null);
 
   // Canvas dimensions
   const CANVAS_WIDTH = 800;
@@ -284,7 +282,7 @@ function PosterCanvas({ posterUrl, qrCodes = [] }: PosterCanvasProps) {
     return inExpandedArea && !inCoreArea;
   };
 
-  const redrawCanvas = () => {
+  const redrawCanvas = useCallback(() => {
     if (!canvasRef.current) return;
 
     const canvas = canvasRef.current;
@@ -293,9 +291,14 @@ function PosterCanvas({ posterUrl, qrCodes = [] }: PosterCanvasProps) {
 
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-    if (backgroundLoaded && (window as any).backgroundImage) {
+    if (
+      backgroundLoaded &&
+      (window as unknown as { backgroundImage?: HTMLImageElement })
+        .backgroundImage
+    ) {
       ctx.drawImage(
-        (window as any).backgroundImage,
+        (window as unknown as { backgroundImage: HTMLImageElement })
+          .backgroundImage,
         0,
         0,
         CANVAS_WIDTH,
@@ -386,11 +389,11 @@ function PosterCanvas({ posterUrl, qrCodes = [] }: PosterCanvasProps) {
         });
       }
     }
-  };
+  }, [elements, selectedElement, backgroundLoaded]);
 
   useEffect(() => {
     redrawCanvas();
-  }, [elements, selectedElement, backgroundLoaded]);
+  }, [redrawCanvas]);
 
   const getCanvasCoordinates = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
@@ -721,7 +724,9 @@ function PosterCanvas({ posterUrl, qrCodes = [] }: PosterCanvasProps) {
 
       img.onload = () => {
         console.log("Background image loaded successfully!");
-        (window as any).backgroundImage = img;
+        (
+          window as unknown as { backgroundImage: HTMLImageElement }
+        ).backgroundImage = img;
         setBackgroundLoaded(true);
         setIsLoading(false);
         redrawCanvas();
@@ -736,7 +741,7 @@ function PosterCanvas({ posterUrl, qrCodes = [] }: PosterCanvasProps) {
       img.src = posterUrl;
     } catch (err) {
       console.error("Error loading background:", err);
-      setError("Error loading background: " + (err as Error).message);
+      setError("Error loading background: " + String(err));
       setIsLoading(false);
     }
   };
@@ -754,7 +759,7 @@ function PosterCanvas({ posterUrl, qrCodes = [] }: PosterCanvasProps) {
       fontSize: newTextSize,
       color: newTextColor,
       fontFamily: newTextFont,
-      textAlign: newTextAlign,
+      textAlign: newTextAlign as "left" | "center" | "right",
     };
 
     setElements([...elements, newText]);
@@ -847,9 +852,14 @@ function PosterCanvas({ posterUrl, qrCodes = [] }: PosterCanvasProps) {
       const scale = EXPORT_SCALE;
       exportCtx.scale(scale, scale);
 
-      if (backgroundLoaded && (window as any).backgroundImage) {
+      if (
+        backgroundLoaded &&
+        (window as unknown as { backgroundImage?: HTMLImageElement })
+          .backgroundImage
+      ) {
         exportCtx.drawImage(
-          (window as any).backgroundImage,
+          (window as unknown as { backgroundImage: HTMLImageElement })
+            .backgroundImage,
           0,
           0,
           CANVAS_WIDTH,
@@ -896,7 +906,7 @@ function PosterCanvas({ posterUrl, qrCodes = [] }: PosterCanvasProps) {
       console.log("Poster exported successfully!");
     } catch (error) {
       console.error("Export failed:", error);
-      setError("Export failed: " + (error as Error).message);
+      setError("Export failed: " + String(error));
     }
   };
 
@@ -904,7 +914,9 @@ function PosterCanvas({ posterUrl, qrCodes = [] }: PosterCanvasProps) {
     setElements([]);
     setSelectedElement(null);
     setBackgroundLoaded(false);
-    (window as any).backgroundImage = null;
+    (
+      window as unknown as { backgroundImage?: HTMLImageElement }
+    ).backgroundImage = undefined;
     redrawCanvas();
   };
 
@@ -937,8 +949,6 @@ function PosterCanvas({ posterUrl, qrCodes = [] }: PosterCanvasProps) {
           }}
           onMouseDown={(e) => e.stopPropagation()}
         >
-          {/* Remove the drag handle div entirely */}
-
           {/* Font Family */}
           <select
             value={selectedTextElement.fontFamily || "Arial"}
@@ -1102,7 +1112,8 @@ function PosterCanvas({ posterUrl, qrCodes = [] }: PosterCanvasProps) {
                       fontSize: `${newTextSize}px`,
                       color: newTextColor,
                       fontFamily: newTextFont,
-                      textAlign: newTextAlign as any,
+                      textAlign:
+                        newTextAlign as React.CSSProperties["textAlign"],
                       lineHeight: "1.2",
                       whiteSpace: "pre-wrap",
                     }}
