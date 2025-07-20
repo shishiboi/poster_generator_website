@@ -65,7 +65,7 @@ def generate_poster_from_prompt(prompt: str, output_path: str = "poster.png") ->
 
     result = client.images.generate(
         model="gpt-image-1",
-        size="1024x1792",
+        size="1024x1536",
         n=1,
         prompt=prompt
     )
