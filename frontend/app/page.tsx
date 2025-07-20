@@ -37,6 +37,7 @@ export default function Home() {
   const [showQRGenerator, setShowQRGenerator] = useState<boolean>(false);
   const [generatedQRs, setGeneratedQRs] = useState<QRCode[]>([]);
 
+  // Use environment variable for API URL
   const API_BASE_URL =
     process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
@@ -129,7 +130,7 @@ export default function Home() {
     setGeneratedQRs([...generatedQRs, qrData]);
   };
 
-  // Save to database (premium feature for signed-up users)
+  // Save to database if user is signed in
   const handleSaveToAccount = async () => {
     if (!posterDataUrl || !user) return;
 
@@ -140,7 +141,7 @@ export default function Home() {
     try {
       // Upload poster to Supabase Storage
       const fileName = `${user.id}/${Date.now()}_${posterFilename}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from("posters")
         .upload(fileName, dataURLtoBlob(posterDataUrl), {
           contentType: "image/png",
@@ -154,7 +155,7 @@ export default function Home() {
       } = supabase.storage.from("posters").getPublicUrl(fileName);
 
       // Save poster metadata to database
-      const { data: posterData, error: dbError } = await supabase
+      const { error: dbError } = await supabase
         .from("posters")
         .insert({
           user_id: user.id,
